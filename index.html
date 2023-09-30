@@ -24,8 +24,7 @@
         #basket {
             position: absolute;
             bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
             width: 70px;
             height: 70px;
             background-image: url('basket.PNG');
@@ -122,11 +121,11 @@
         function moveBasket(distance) {
             var containerWidth = gameContainer.offsetWidth;
             var basketWidth = basket.offsetWidth;
-            var maxLeft = (containerWidth - basketWidth) / 2;
+            var maxLeft = containerWidth - basketWidth;
             var newBasketPosition = basketPosition + distance;
 
-            if (newBasketPosition < -maxLeft) {
-                newBasketPosition = -maxLeft;
+            if (newBasketPosition < 0) {
+                newBasketPosition = 0;
             } else if (newBasketPosition > maxLeft) {
                 newBasketPosition = maxLeft;
             }
@@ -140,7 +139,7 @@
                         basketPosition = newBasketPosition;
                     }
 
-                    basket.style.transform = "translateX(" + basketPosition + "px)";
+                    basket.style.left = basketPosition + "px";
                     requestAnimationFrame(animateBasket);
                 }
             }
