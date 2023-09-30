@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fruit Catcher</title>
+    <style>
+        body {
+            background-color: #f3f3f3;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #game-container {
+            position: relative;
+            width: auto;
+            height: 500px;
+            margin: 0 auto;
+            border: 1px solid #999999;
+            background-color: #ffffff;
+        }
+
+        #basket {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background-image: url('basket.PNG');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .fruit {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .fruit-orange {
+            background-image: url('fruit-orange.PNG');
+        }
+
+        .fruit-apple {
+            background-image: url('fruit-apple.PNG');
+        }
+
+        .fruit-banana {
+            background-image: url('fruit-banana.PNG');
+        }
+
+        .fruit-pear {
+            background-image: url('fruit-pear.PNG');
+        }
+
+        #score {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fruit Catcher</h1>
+    <div id="game-container">
+        <div id="basket"></div>
+    </div>
+    <div id="score">Score: 0</div>
+    <script>
+        var score = 0;
+        var gameContainer = document.getElementById("game-container");
+        var basket = document.getElementById("basket");
+        var scoreElement = document.getElementById("score");
+        var basketPosition = 0;
+        var basketSpeed = 36;
+
+        // Move the basket when the A or D key is pressed
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "a" || event.key === "A") {
+                moveBasket(-basketSpeed); // Move left
+            } else if (event.key === "d" || event.key === "D") {
+                moveBasket(basketSpeed); // Move right
+            }
+        });
+
+        // Generate a random fruit and drop it from the top
+        function dropFruit() {
+            var fruit = document.createElement("div");
+            fruit.className = "fruit";
+            fruit.classList.add(getRandomFruitClass());
+            fruit.style.left = getRandomPosition() + "px";
+            gameContainer.appendChild(fruit);
+
+            // Animate the fruit falling down
+            var animationInterval = setInterval(function () {
+                var top = fruit.offsetTop;
+                fruit.style.top = top + 1 + "px";
+
+                // Check if the fruit is caught by the basket
+                if (isCaught(fruit)) {
+                    clearInterval(animationInterval);
+                    gameContainer.removeChild(fruit);
+                    score++;
+                    updateScore();
+                }
+
+                // Check if the fruit reaches the bottom
+                if (top > gameContainer.offsetHeight) {
+                    clearInterval(animationInterval);
+                    gameContainer.removeChild(fruit);
+                }
+            }, 10);
+        }
+
+        // Move the basket smoothly using requestAnimationFrame
+        function moveBasket(distance) {
+            var containerWidth = gameContainer.offsetWidth;
+            var basketWidth = basket.offsetWidth;
+            var maxLeft = (containerWidth - basketWidth) / 2;
+            var newBasketPosition = basketPosition + distance;
+
+            if (newBasketPosition < -maxLeft) {
+                newBasketPosition = -maxLeft;
+            } else if (newBasketPosition > maxLeft) {
+                newBasketPosition = maxLeft;
+            }
+
+            function animateBasket() {
+                if (basketPosition !== newBasketPosition) {
+                    var step = distance / 10;
+                    basketPosition += step;
+
+                    if ((distance < 0 && basketPosition >= newBasketPosition) || (distance > 0 && basketPosition <= newBasketPosition)) {
+                        basketPosition = newBasketPosition;
+                    }
+
+                    basket.style.transform = "translateX(" + basketPosition + "px)";
+                    requestAnimationFrame(animateBasket);
+                }
+            }
+
+            animateBasket();
+        }
+
+        // Check if the fruit is caught by the basket
+        function isCaught(fruit) {
+            var fruitRect = fruit.getBoundingClientRect();
+            var basketRect = basket.getBoundingClientRect();
+            return (
+                fruitRect.bottom >= basketRect.top &&
+                fruitRect.right >= basketRect.left &&
+                fruitRect.left <= basketRect.right
+            );
+        }
+
+        // Get a random fruit class
+        function getRandomFruitClass() {
+            var fruitClasses = ["fruit-orange", "fruit-apple", "fruit-banana", "fruit-pear"];
+            return fruitClasses[Math.floor(Math.random() * fruitClasses.length)];
+        }
+
+        // Generate a random position for the fruit
+        function getRandomPosition() {
+            return Math.floor(Math.random() * (gameContainer.offsetWidth - 40));
+        }
+
+        // Update the score on the screen
+        function updateScore() {
+            scoreElement.innerHTML = "Score: " + score;
+        }
+
+        // Start the game
+        setInterval(dropFruit, 2000);
+    </script>
+</body>
+</html>
