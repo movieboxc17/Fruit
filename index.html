@@ -24,7 +24,7 @@
         #basket {
             position: absolute;
             bottom: 10px;
-            left: 0;
+            margin-left: -35px; /* Half of the basket width */
             width: 70px;
             height: 70px;
             background-image: url('basket.PNG');
@@ -76,8 +76,19 @@
         var gameContainer = document.getElementById("game-container");
         var basket = document.getElementById("basket");
         var scoreElement = document.getElementById("score");
-        var basketPosition = 0;
+        var basketPosition = 0; // Initialize to zero initially
         var basketSpeed = 36;
+
+        // Function to center the basket initially
+        function centerBasket() {
+            var containerWidth = gameContainer.offsetWidth;
+            var basketWidth = basket.offsetWidth;
+            basketPosition = (containerWidth - basketWidth) / 2;
+            basket.style.left = basketPosition + "px";
+        }
+
+        // Call the centerBasket function to center the basket initially
+        centerBasket();
 
         // Move the basket when the A or D key is pressed
         document.addEventListener("keydown", function (event) {
